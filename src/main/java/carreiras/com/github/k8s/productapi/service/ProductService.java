@@ -52,6 +52,23 @@ public class ProductService {
                 .orElseThrow(() -> new ResourceNotFoundException(PRODUCT_NOT_FOUND));
     }
 
+    public Product update(Long id, ProductRequest productRequest) {
+        Category category = categoryRepository.findById(productRequest.getCategory_id())
+                .orElseThrow(() -> new ResourceNotFoundException(CATEGORY_NOT_FOUND));
+
+        findByIdentifier(productRequest.getIdentifier());
+
+        return productRepository.findById(id)
+                .map(f -> {
+                    Product product = Convert.convertProductRequestToProduct(productRequest, category);
+                    product.setId(id);
+                    product.setIdentifier(f.getIdentifier());
+                    productRepository.save(product);
+                    return product;
+                })
+                .orElseThrow(() -> new ResourceNotFoundException(PRODUCT_NOT_FOUND));
+    }
+
     public void delete(Long id) {
         productRepository.findById(id)
                 .map(m -> {

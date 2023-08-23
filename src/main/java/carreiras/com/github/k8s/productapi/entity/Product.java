@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Builder
@@ -20,13 +21,15 @@ import lombok.NoArgsConstructor;
 public class Product {
 
     @Id
+    @Setter
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    
     private String name;
     private Float price;
     private String description;
-
+    
+    @Setter
     @Column(unique = true)
     private String identifier;
 
