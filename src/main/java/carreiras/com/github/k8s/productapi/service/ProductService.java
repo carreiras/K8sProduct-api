@@ -1,5 +1,7 @@
 package carreiras.com.github.k8s.productapi.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import carreiras.com.github.k8s.dto.product.ProductRequest;
@@ -29,4 +31,33 @@ public class ProductService {
         return productRepository.save(product);
     }
 
+    public List<Product> findAll() {
+        return productRepository.findAll();
+    }
+
+    public List<Product> findByCategoryId(Long categoryId) {
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ResourceNotFoundException(CATEGORY_NOT_FOUND));
+
+        return productRepository.findByCategoryId(category.getId());
+    }
+
+    public Product findById(long id) {
+        return productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(PRODUCT_NOT_FOUND));
+    }
+
+    public Product findByIdentifier(String identifier) {
+        return productRepository.findByIdentifier(identifier)
+                .orElseThrow(() -> new ResourceNotFoundException(PRODUCT_NOT_FOUND));
+    }
+
+    public void delete(Long id) {
+        productRepository.findById(id)
+                .map(m -> {
+                    productRepository.delete(m);
+                    return Void.TYPE;
+                })
+                .orElseThrow(() -> new ResourceNotFoundException(PRODUCT_NOT_FOUND));
+    }
 }
