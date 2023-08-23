@@ -34,14 +34,14 @@ public class ProductController {
         return productService.findAll();
     }
 
-    @GetMapping("/category/{categoryId}")
-    public List<Product> findByCategoryId(@PathVariable Long categoryId) {
-        return productService.findByCategoryId(categoryId);
-    }
-
     @GetMapping("/{id}")
     public Product findById(@PathVariable Long id) {
         return productService.findById(id);
+    }
+
+    @GetMapping("/category/{categoryId}")
+    public List<Product> findByCategoryId(@PathVariable Long categoryId) {
+        return productService.findByCategoryId(categoryId);
     }
 
     @GetMapping("/identifier/{identifier}")

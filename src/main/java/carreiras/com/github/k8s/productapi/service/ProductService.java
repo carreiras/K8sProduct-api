@@ -35,16 +35,16 @@ public class ProductService {
         return productRepository.findAll();
     }
 
+    public Product findById(long id) {
+        return productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(PRODUCT_NOT_FOUND));
+    }
+
     public List<Product> findByCategoryId(Long categoryId) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException(CATEGORY_NOT_FOUND));
 
         return productRepository.findByCategoryId(category.getId());
-    }
-
-    public Product findById(long id) {
-        return productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(PRODUCT_NOT_FOUND));
     }
 
     public Product findByIdentifier(String identifier) {
