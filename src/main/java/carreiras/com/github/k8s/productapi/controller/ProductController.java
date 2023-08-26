@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import carreiras.com.github.k8s.dto.product.ProductRequest;
+import carreiras.com.github.k8s.dto.product.ProductResponse;
 import carreiras.com.github.k8s.productapi.entity.Product;
 import carreiras.com.github.k8s.productapi.service.ProductService;
 import jakarta.validation.Valid;
@@ -25,32 +26,32 @@ public class ProductController {
     private final ProductService productService;
 
     @PostMapping()
-    public Product create(@RequestBody @Valid ProductRequest productRequest) {
+    public ProductResponse create(@RequestBody @Valid ProductRequest productRequest) {
         return productService.create(productRequest);
     }
 
     @GetMapping
-    public List<Product> findAll() {
+    public List<ProductResponse> findAll() {
         return productService.findAll();
     }
 
     @GetMapping("/{id}")
-    public Product findById(@PathVariable Long id) {
+    public ProductResponse findById(@PathVariable Long id) {
         return productService.findById(id);
     }
 
     @GetMapping("/category/{categoryId}")
-    public List<Product> findByCategoryId(@PathVariable Long categoryId) {
+    public List<ProductResponse> findByCategoryId(@PathVariable Long categoryId) {
         return productService.findByCategoryId(categoryId);
     }
 
     @GetMapping("/identifier/{identifier}")
-    public Product findByIdentifier(@PathVariable String identifier) {
+    public ProductResponse findByIdentifier(@PathVariable String identifier) {
         return productService.findByIdentifier(identifier);
     }
 
     @PutMapping("/{id}")
-    public Product update(@PathVariable Long id, @RequestBody @Valid ProductRequest productRequest) {
+    public ProductResponse update(@PathVariable Long id, @RequestBody @Valid ProductRequest productRequest) {
         return productService.update(id, productRequest);
     }
 

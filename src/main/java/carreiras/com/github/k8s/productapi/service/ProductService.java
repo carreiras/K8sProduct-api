@@ -1,10 +1,15 @@
 package carreiras.com.github.k8s.productapi.service;
 
+import static carreiras.com.github.k8s.productapi.utility.Convert.convertProductRequestToProduct;
+import static carreiras.com.github.k8s.productapi.utility.Convert.convertProductToProductResponse;
+
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import carreiras.com.github.k8s.dto.product.ProductRequest;
+import carreiras.com.github.k8s.dto.product.ProductResponse;
 import carreiras.com.github.k8s.productapi.entity.Category;
 import carreiras.com.github.k8s.productapi.entity.Product;
 import carreiras.com.github.k8s.productapi.exception.ResourceNotFoundException;
@@ -23,50 +28,67 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
 
-    public Product create(ProductRequest productRequest) {
+    public ProductResponse create(ProductRequest productRequest) {
         Category category = categoryRepository.findById(productRequest.getCategory_id())
                 .orElseThrow(() -> new ResourceNotFoundException(CATEGORY_NOT_FOUND));
 
-        Product product = Convert.convertProductRequestToProduct(productRequest, category);
-        return productRepository.save(product);
+        Product product = convertProductRequestToProduct(productRequest, category);
+        Product savedProduct = productRepository.save(product);
+
+        return convertProductToProductResponse(savedProduct);
     }
 
-    public List<Product> findAll() {
-        return productRepository.findAll();
+    public List<ProductResponse> findAll() {
+        List<Product> products = productRepository.findAll();
+
+        return products.stream()
+                .map(Convert::convertProductToProductResponse)
+                .collect(Collectors.toList());
     }
 
-    public Product findById(long id) {
-        return productRepository.findById(id)
+    public ProductResponse findById(long id) {
+        Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(PRODUCT_NOT_FOUND));
+
+        return convertProductToProductResponse(product);
     }
 
-    public List<Product> findByCategoryId(Long categoryId) {
+    public List<ProductResponse> findByCategoryId(Long categoryId) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException(CATEGORY_NOT_FOUND));
 
-        return productRepository.findByCategoryId(category.getId());
+        List<Product> products = productRepository.findByCategoryId(category.getId());
+
+        return products.stream()
+                .map(Convert::convertProductToProductResponse)
+                .collect(Collectors.toList());
+
     }
 
-    public Product findByIdentifier(String identifier) {
-        return productRepository.findByIdentifier(identifier)
+    public ProductResponse findByIdentifier(String identifier) {
+        Product product = productRepository.findByIdentifier(identifier)
                 .orElseThrow(() -> new ResourceNotFoundException(PRODUCT_NOT_FOUND));
+
+        return convertProductToProductResponse(product);
     }
 
-    public Product update(Long id, ProductRequest productRequest) {
+    public ProductResponse update(Long id, ProductRequest productRequest) {
         Category category = categoryRepository.findById(productRequest.getCategory_id())
                 .orElseThrow(() -> new ResourceNotFoundException(CATEGORY_NOT_FOUND));
 
         findByIdentifier(productRequest.getIdentifier());
 
-        return productRepository.findById(id)
+        Product updatedProduct = productRepository.findById(id)
                 .map(f -> {
-                    Product product = Convert.convertProductRequestToProduct(productRequest, category);
+                    Product product = convertProductRequestToProduct(productRequest, category);
                     product.setId(id);
                     product.setIdentifier(f.getIdentifier());
                     productRepository.save(product);
                     return product;
                 })
                 .orElseThrow(() -> new ResourceNotFoundException(PRODUCT_NOT_FOUND));
+
+        return convertProductToProductResponse(updatedProduct);
     }
 
     public void delete(Long id) {
